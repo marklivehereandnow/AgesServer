@@ -1,3 +1,5 @@
+package com.livehereandnow.ages.cs;
+
 /*
  * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  *
@@ -27,50 +29,30 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
+ */ 
 
 import java.net.*;
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class KKMultiServerThread extends Thread {
+public class AgesServer {
+    public static void main(String[] args) throws IOException {
 
-    private Socket socket = null;
-
-    public KKMultiServerThread(Socket socket) {
-        super();
-        int Id = SerialNumberGenerator.INSTANCE.getNextSerial();
-        this.setName("player00" + Id);
-//        super("mark00"+SerialNumberGenerator.INSTANCE.getNextSerial(););
-        this.socket = socket;
+    if (args.length != 1) {
+        System.err.println("Usage: java KKMultiServer <port number>");
+        System.exit(1);
     }
 
-    public void run() {
-        System.out.println("   Server's thread starting ..." + this.getName());
-        try (
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(
-                                socket.getInputStream()));) {
-            String inputLine, outputLine;
-            KnockKnockProtocol kkp = new KnockKnockProtocol(this.getName());
-            outputLine = kkp.processInput(null);
-            out.println(outputLine);
-
-            while ((inputLine = in.readLine()) != null) {
-                outputLine = kkp.processInput(inputLine);
-                out.println(outputLine);
-                if (outputLine.equals("Bye")) {
-                    break;
-                }
-            }
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-       
-            Logger.getLogger(KKMultiServerThread.class.getName()).log(Level.SEVERE, null, e);
+        int portNumber = Integer.parseInt(args[0]);
+        boolean listening = true;
+        
+        try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
+            System.out.println("   Server start listening ...");
+            while (listening) {
+	            new AgesServerThread(serverSocket.accept()).start();
+	        }
+	    } catch (IOException e) {
+            System.err.println("Could not listen on port " + portNumber);
+            System.exit(-1);
         }
     }
 }
