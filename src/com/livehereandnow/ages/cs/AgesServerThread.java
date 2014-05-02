@@ -6,13 +6,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AgesServerThread extends Thread {
-
+    private int threadId;
     private Socket socket = null;
 
     public AgesServerThread(Socket socket) {
         super();
-        int Id = SerialNumberGenerator.INSTANCE.getNextSerial();
-        this.setName("player00" + Id);
+        threadId = SerialNumberGenerator.INSTANCE.getNextSerial();
+        System.out.println(" thread id="+threadId);
+        this.setName("player00" + threadId);
 //        super("mark00"+SerialNumberGenerator.INSTANCE.getNextSerial(););
         this.socket = socket;
     }
@@ -25,7 +26,7 @@ public class AgesServerThread extends Thread {
                         new InputStreamReader(
                                 socket.getInputStream()));) {
             String inputLine, outputLine;
-            AgesProtocol kkp = new AgesProtocol(this.getName());
+            AgesProtocol kkp = new AgesProtocol(threadId);
             outputLine = kkp.processInput(null);
             out.println(outputLine);
 

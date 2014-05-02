@@ -11,6 +11,7 @@ package com.livehereandnow.ages.cs;
  * @author mark
  */
 public class Users {
+    private static int counter=0;
     private static String[] player=new String[10];
     {
         player[0]="server";
@@ -19,11 +20,16 @@ public class Users {
     }
     public static void setPlayer(int k, String name){
         player[k]=name;
+        counter++;
     }
     public static String getStatus(){
         StringBuilder sb=new StringBuilder();
-        sb.append("Player 1 is "+player[1]);
-        sb.append("Player 2 is "+player[2]);
+        sb.append("\nPlayer 1 is "+player[1]);
+        sb.append("\nPlayer 2 is "+player[2]);
+        if (counter==2){
+        sb.append("\n === Two players show up, to start our game === ");
+            
+        }
         return sb.toString();
     }
     

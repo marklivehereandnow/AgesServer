@@ -35,6 +35,7 @@ import java.net.*;
 
 public class AgesProtocol {
 
+    int seatNumber=0;
 //    Server ages;
     private static final int WAITING = 0;
     private static final int HELLO = 10;
@@ -56,9 +57,10 @@ public class AgesProtocol {
         "Is there an owl in here?",
         "Is there an echo in here?"};
 
-    public AgesProtocol(String threadName) {
+    public AgesProtocol(int threadId) {
 //        this.ages = new Server();
-//        System.out.println(" protocol: threadName is "+threadName);
+        seatNumber=threadId;
+        System.out.println(" protocol: thread ID is "+threadId);
     }
 
     public String processInput(String input) {
@@ -83,7 +85,12 @@ public class AgesProtocol {
 
             case PLAYER_NAME:
                 if (input.equalsIgnoreCase("max") || input.equalsIgnoreCase("amy")) {
-                    output = "Welcome to our game! Please start to send your command!";
+                    output = input+ ", welcome to our game! checking ... 2 players";
+                    Users.setPlayer(seatNumber, input);
+                    
+                    System.out.println(input+" is here.");
+                    System.out.println(" "+Users.getStatus());
+                    
                     state = GAMING;
                 } else {
                     output = "Sorry, for Max/Amy only! What's your name?";
