@@ -1,123 +1,193 @@
 package com.livehereandnow.ages.cs;
 
-/*
- * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *   - Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *   - Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- *   - Neither the name of Oracle or the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
- * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
- * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 import java.io.*;
 import java.net.*;
 
-public class AgesProtocol {
+public class AgesProtocol implements State {
 
-    int seatNumber=0;
-//    Server ages;
-    private static final int WAITING = 0;
-    private static final int HELLO = 10;
-    private static final int PLAYER_NAME = 20;
-    private static final int GAMING = 25;
-
-    private static final int GAME_OVER = 30;
+    int id = 0;
+////    Server ages;
+//    private static final int WAITING = 0;
+//    private static final int ASK_USERNAME = 10;
+////    private static final int STATE_PASSWORD = 15;
+//    private static final int CHECK_USERNAME = 20;
+//    private static final int WAITING_FOR_PLAYER = 22;
+//    private static final int TURN_MAX = 25;
+//    private static final int TURN_AMY = 26;
+//    
+//
+//    private static final int GAME_OVER = 30;
 //    private static final int ANOTHER = 40;
 
 //    private static final int NUMJOKES = 50;
     private int state = WAITING;
-    private int currentJoke = 0;
-    String playerName = "---";
+//    private int state = State.ASK_USERNAME;
+    
+//    private int state = ASK_USERNAME;
 
-    private String[] clues = {"Turnip", "Little Old Lady", "Atch", "Who", "Who"};
-    private String[] answers = {"Turnip the heat, it's cold in here!",
-        "I didn't know you could yodel!",
-        "Bless you!",
-        "Is there an owl in here?",
-        "Is there an echo in here?"};
+//    private int currentJoke = 0;
+    String currentPlayer = "***";
+    String cmd = "";
+    private GameMonitor monitor = GameMonitor.getInstance();
+
+    public int getState() {
+        return state;
+    }
 
     public AgesProtocol(int threadId) {
 //        this.ages = new Server();
-        seatNumber=threadId;
-        System.out.println(" protocol: thread ID is "+threadId);
+        id = threadId;
+//        GameMonitor.getInstance().setUsername(id, "???");// reversed!!!
+//        setUserState(id, "???");
+        monitor.setUsername(id, "?");
+        monitor.setState(id, state);
+        monitor.show();
+
+        //GameMonitor.getInstance().setState(id, getStateName());
+        debug("    [Thread#" + threadId + "] is connected.");
+//        GameMonitor.getInstance().show();
+
+    }
+
+//    private void setUserState(int id, String name) {
+//        GameMonitor.getInstance().setUsername(id, name);
+////        GameMonitor.getInstance().setState(id, getStateName());
+//        GameMonitor.getInstance().show();
+//
+//    }
+//    private void updateUserState(int id, String name, int state) {
+//        GameMonitor.getInstance().setUserState(id, name);
+//        GameMonitor.getInstance().setState(id, getStateName());
+//
+//        GameMonitor.getInstance().show();
+//
+//    }
+    private void debug(String str) {
+        System.out.println(" ...[Protocol] " + str);
     }
 
     public String processInput(String input) {
+        monitor.show(" before");
+        cmd = input;
         String output = null;
         switch (state) {
             case WAITING:
-                output = "[Ages Server] May I help you?(y/n)";
-                state = HELLO;
+                output = "to connect? (y/n)";
+                state = ASK_USERNAME;
+                monitor.setState(id, state);
                 break;
-            case HELLO:
+            case ASK_USERNAME:
                 if (input.equalsIgnoreCase("y")) {
                     output = "What's your name?";
-                    state = PLAYER_NAME;
+                    state = CHECK_USERNAME;
                 } else {
-                    output = "[Ages Server] May I help you?(y/n)";
+//                    System.exit(0);
+                    output = "Bye";
+                    debug("[Thread#" + id + "] is finished!");
+                    //   System.out.println(
+                    //                    GameMonitor.getInstance().setUserState(id, "---");// reversed!!!
+                    //                    GameMonitor.getInstance().show();
 
-                    state = WAITING;
+//                    setUserState(id, "---");
+                    monitor.setUsername(id, "?");
+                    monitor.setState(id, state);
+//                    updateUserState(id, "---", state);
+
+//                    output = "[Ages Server] May I help you?(y/n)";
+//
+//                    state = WAITING;
                     //return "NO";
 //                    output = "We cannot continue if you don't say 'y'";
                 }
                 break;
 
-            case PLAYER_NAME:
-                if (input.equalsIgnoreCase("max") || input.equalsIgnoreCase("amy")) {
-                    output = input+ ", welcome to our game! checking ... 2 players";
-                    Users.setPlayer(seatNumber, input);
-                    
-                    System.out.println(input+" is here.");
-                    System.out.println(" "+Users.getStatus());
-                    
-                    state = GAMING;
-                } else {
-                    output = "Sorry, for Max/Amy only! What's your name?";
+            case CHECK_USERNAME:
+//                Users.setPlayer(id, input);
+//                GameMonitor.getInstance().setUserState(id, input);
+                currentPlayer = input.toLowerCase();
+                monitor.setUsername(id, input);
 
-//                    state = HELLO;
-                    // output = "This is  *** Through the Ages *** server. May I help you?";
+                //GameMonitor.getInstance().show();
+                if (((currentPlayer.equalsIgnoreCase("Max")) || currentPlayer.equalsIgnoreCase("Amy"))) {
+                    if (GameMonitor.getInstance().isReadyToGame()) {
+                        output = "Your command?";
+                        state = TURN_MAX;
+                    } else {
+                        if (!GameMonitor.getInstance().isThere("Max")) {
+                            output = "Please wait for Max.";
+                            state = WAITING_FOR_PLAYER;
+                        } else if (!GameMonitor.getInstance().isThere("Amy")) {
+                            output = "Please wait for Amy.";
+                            state = WAITING_FOR_PLAYER;
+
+                        }
+                    }
+                } else {
+                    output = "Bye";
                 }
                 break;
 
-            case GAMING:
-                if (!input.equalsIgnoreCase("end-game")) {
-                    output = "Your command is " + input;   // 90% further development is here!
+            case WAITING_FOR_PLAYER:
+                if (((currentPlayer.equalsIgnoreCase("Max")) || currentPlayer.equalsIgnoreCase("Amy"))) {
+                    if (GameMonitor.getInstance().isReadyToGame()) {
+                        output = "Your command?";
+                        state = TURN_MAX;
+                    } else {
+                        if (!GameMonitor.getInstance().isThere("Max")) {
+                            output = "Please wait for Max.";
+                            state = WAITING_FOR_PLAYER;
+                        } else if (!GameMonitor.getInstance().isThere("Amy")) {
+                            output = "Please wait for Amy.";
+                            state = WAITING_FOR_PLAYER;
 
+                        }
+                    }
                 } else {
-                    state = GAME_OVER;
-                    output = "Are you sure you want to end this game?";
-// output = "This is  *** Through the Ages *** server. May I help you?";
+                    output = "Bye";
+                }
+                break;
+
+            case TURN_MAX:
+                switch (currentPlayer) {
+                    case "max":
+                        if (cmd.equalsIgnoreCase("change-turn")){
+                            state=TURN_AMY;
+                            
+                            output="change-turn to Amy";
+                            break;
+                        }
+                        output = " doing Max's command... " + cmd;   // 90% further development is here!
+                        break;
+                    default:
+                        output = currentPlayer+", not your turn!";   // 90% further development is here!
+                }
+                break;
+
+            case TURN_AMY:
+                switch (currentPlayer) {
+                    case "amy":
+                        if (cmd.equalsIgnoreCase("change-turn")){
+                            state=TURN_MAX;
+                            output="change-turn to Max";
+                            break;
+                        }
+                       
+                        output = " doing Amy's command... " + cmd;   // 90% further development is here!
+                        break;
+                    default:
+                        output = currentPlayer+", not your turn!";   // 90% further development is here!
                 }
                 break;
 
             case GAME_OVER:
                 if (input.equalsIgnoreCase("y")) {
-                    output = "Game is over! ";
-                    state = WAITING;
-
+//                    output = "Game is over! ";
+//                    state = WAITING;
+//                    System.exit(0);
+                    output = "Bye";
+//                 
                 } else {
-                    state = GAMING;
+                    state = TURN_MAX;
                     output = "Your command?";
 // output = "This is  *** Through the Ages *** server. May I help you?";
                 }
@@ -128,6 +198,10 @@ public class AgesProtocol {
 
         }
 
+        monitor.setUsername(id, currentPlayer);
+        monitor.setState(id, state);
+
+        monitor.show(" after");
         return output;
     }
 }

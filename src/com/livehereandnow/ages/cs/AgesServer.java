@@ -46,7 +46,8 @@ public class AgesServer {
         boolean listening = true;
         
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
-            System.out.println("   Server start listening ...");
+//            System.out.println("  [Ages Server] starts listening to port#"+portNumber);
+            GameMonitor.getInstance().show();
             while (listening) {
 	            new AgesServerThread(serverSocket.accept()).start();
 	        }
