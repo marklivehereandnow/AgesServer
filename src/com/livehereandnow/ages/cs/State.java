@@ -11,12 +11,12 @@ package com.livehereandnow.ages.cs;
  */
 public interface State {
 
-    int WAITING = 0;
-    int ASK_USERNAME = 10;
-//    private static final int STATE_PASSWORD = 15;
-    int CHECK_USERNAME = 20;
-    int WAITING_FOR_PLAYER = 22;
-    int TURN_MAX = 25;
-    int TURN_AMY = 26;
-    int GAME_OVER = 30;
+    int WAITING = 100;
+    int ASK_PASSWORD = 200;
+    int CHECK_PASSWORD = 220;
+    int CHECK_PLAYERS = 300;
+    int WAITING_FOR_PLAYER = 400;
+    int GAMING = 500;
+    int GUEST = 600;
+    int GAME_OVER = 999;
 }

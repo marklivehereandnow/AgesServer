@@ -31,11 +31,12 @@ package com.livehereandnow.ages.cs;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */ 
 
+import com.livehereandnow.ages.exception.AgesException;
 import java.net.*;
 import java.io.*;
 
 public class AgesServer {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, AgesException {
 
     if (args.length != 1) {
         System.err.println("Usage: java KKMultiServer <port number>");
