@@ -92,7 +92,14 @@ public class AgesProtocol implements State {
 
             case CHECK_PASSWORD:
                 password=input;
-             
+                if (currentPlayer.equalsIgnoreCase("admin")){
+                    state=ADMIN;
+                    output="admin is ready";
+                    break;
+                }
+                
+                
+                
                 state=CHECK_PLAYERS;
 //                output="--- welcome to xxx ---";
 //                break;
@@ -123,6 +130,9 @@ public class AgesProtocol implements State {
                 }
                 break;
 
+            case ADMIN:
+                output="  ... something for admin only!";
+                break;
             case GUEST:
                 output="  ... something for guest only!";
                 break;

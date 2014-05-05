@@ -17,6 +17,8 @@ public interface State {
     int CHECK_PLAYERS = 300;
     int WAITING_FOR_PLAYER = 400;
     int GAMING = 500;
-    int GUEST = 600;
+    int ADMIN = 600;
+    int GUEST = 610;
+    
     int GAME_OVER = 999;
 }

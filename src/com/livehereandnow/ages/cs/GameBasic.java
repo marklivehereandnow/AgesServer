@@ -17,6 +17,5 @@ public interface GameBasic {
     String getActivePlayer() throws IOException, AgesException;
     void setActivePlayer(String player) throws IOException, AgesException;
     String doUserCmd(String player,String cmd) throws IOException, AgesException;
-    String getFeedback() throws IOException, AgesException;
     
 }

@@ -23,6 +23,8 @@ public class GameMonitor implements State {
                 return "asking password";
             case State.CHECK_PLAYERS:
                 return "???checking players status";
+            case State.ADMIN:
+                return "admin";
             case State.GUEST:
                 return "guest";
             case State.WAITING_FOR_PLAYER:

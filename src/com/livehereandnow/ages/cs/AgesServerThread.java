@@ -1,11 +1,13 @@
 package com.livehereandnow.ages.cs;
 
+import com.livehereandnow.ages.cs.State;
 import com.livehereandnow.ages.exception.AgesException;
-import java.net.*;
 import java.io.*;
+import java.net.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.livehereandnow.ages.cs.State;
 
 public class AgesServerThread extends Thread implements State {
 
@@ -55,13 +57,21 @@ public class AgesServerThread extends Thread implements State {
                 //
                 //
                 //
-                if (agesProtocol.getState() == GAMING) {
-//                    game.doProtocol(inputLine)
-                    
-                    outputLine = game.doUserCmd(agesProtocol.currentPlayer, inputLine);
-                    
-                } else {
-                    outputLine = agesProtocol.processInput(inputLine);// after protocol's process
+                int state = agesProtocol.getState();
+                switch (state) {
+                    case ADMIN:
+//                        System.out.println("admin: "+inputLine);
+                        DateFormat dateFormat = new SimpleDateFormat("dd/MM HH:mm:ss");
+                        java.util.Date date = new java.util.Date();
+//                        System.out.println("Current Date Time : " + dateFormat.format(date));
+                        outputLine = "" + dateFormat.format(date)+game.doUserCmd("admin", "brief");
+                        break;
+                    case GAMING:
+                        outputLine = game.doUserCmd(agesProtocol.currentPlayer, inputLine);
+                        break;
+                    default:
+                        outputLine = agesProtocol.processInput(inputLine);// after protocol's process
+
                 }
                 //
                 // to implement Game logic here

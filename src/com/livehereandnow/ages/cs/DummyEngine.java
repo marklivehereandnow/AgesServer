@@ -50,8 +50,5 @@ public class DummyEngine implements GameBasic {
         return engine.doUserCmd(user, cmd);
     }
 
-    @Override
-    public String getFeedback() throws IOException, AgesException {
-        return "xxx";
-    }
+
 }
